@@ -1,1 +1,4 @@
-# bot-dashboard
+# Discord Bot Dashboard
+-----------------------
+
+Backend + Frontend
