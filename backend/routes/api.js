@@ -55,7 +55,7 @@ router.get("/guilds/:id/settings", ensureAuth, async (req, res) => {
 });
 
 router.post("/guilds/:id/settings", ensureAuth, async (req, res) => {
-  
+  res.status(200).json(req.body); // dont remove
 });
 
 router.get('/refresh', ensureAuth, async (req, res) => {
