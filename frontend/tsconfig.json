@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".", // This sets the base directory for resolving module names
+        "paths": {
+          "@/*": ["./*"] // This maps the "@/" alias to the root of your project
+          },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

@@ -1,10 +1,10 @@
 import type { AppProps } from 'next/app';
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from '@/components/ui/theme-provider'; // shadcn/ui ThemeProvider
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider attribute="class">
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <Component {...pageProps} />
     </ThemeProvider>
   );
