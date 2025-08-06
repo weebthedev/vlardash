@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import Head from 'next/head';
+import { LogOut, RefreshCw, Server } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -16,47 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-
-// Import shadcn select components
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select';
-
-const LogoutIcon = () => (
-  <svg
-    className="w-5 h-5 inline-block mr-2"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    viewBox="0 0 24 24"
-  >
-    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-    <path d="M16 17l5-5-5-5" />
-    <path d="M21 12H9" />
-  </svg>
-);
-
-const RefreshIcon = ({ spinning }: { spinning: boolean }) => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 50 50"
-    xmlns="http://www.w3.org/2000/svg"
-    className={`${spinning ? 'animate-spin' : ''} inline-block mr-2`}
-    fill="currentColor"
-  >
-    <path d="M25 38c-7.2 0-13-5.8-13-13 0-3.2 1.2-6.2 3.3-8.6l1.5 1.3C15 19.7 14 22.3 14 25c0 6.1 4.9 11 11 11 1.6 0 3.1-.3 4.6-1l.8 1.8c-1.7.8-3.5 1.2-5.4 1.2z" />
-    <path d="M34.7 33.7l-1.5-1.3c1.8-2 2.8-4.6 2.8-7.3 0-6.1-4.9-11-11-11-1.6 0-3.1.3-4.6 1l-.8-1.8c1.7-.8 3.5-1.2 5.4-1.2 7.2 0 13 5.8 13 13 0 3.1-1.2 6.2-3.3 8.6z" />
-    <path d="M18 24h-2v-6h-6v-2h8z" />
-    <path d="M40 34h-8v-8h2v6h6z" />
-  </svg>
-);
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -64,7 +25,6 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [guilds, setGuilds] = useState<any[]>([]);
   const [spinning, setSpinning] = useState(false);
-  const [selectedGuildId, setSelectedGuildId] = useState<string>("");
 
   useEffect(() => {
     fetchUser()
@@ -87,13 +47,6 @@ export default function Dashboard() {
     setTimeout(() => setSpinning(false), 1000);
   };
 
-  const handleSelectChange = (id: string) => {
-    setSelectedGuildId(id);
-    if (id) {
-      router.push(`/manage/${id}`);
-    }
-  };
-
   if (!user) return null;
 
   return (
@@ -103,107 +56,105 @@ export default function Dashboard() {
       </Head>
       <main className="min-h-screen bg-background text-foreground flex flex-col">
         {/* Navbar */}
-        <nav className="sticky top-0 left-0 w-full z-50 border-b border-border px-6 py-4 flex items-center justify-end shadow-sm bg-background">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-2 px-2 py-1">
-                <span className="text-base font-semibold">{user.username}</span>
-                <Avatar>
-                  <AvatarImage
-                    src={
-                      user.avatar
-                        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-                        : 'https://cdn.discordapp.com/embed/avatars/0.png'
-                    }
-                    alt="Avatar"
-                  />
-                  <AvatarFallback>{user.username[0]}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem asChild>
-                <a
-                  href="http://localhost:3002/auth/logout"
-                  className="flex items-center text-red-500 hover:bg-red-700 hover:text-white transition"
-                >
-                  <LogoutIcon />
-                  Sign Out
-                </a>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <nav className="sticky top-0 left-0 w-full z-50 border-b border-border px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between shadow-sm bg-background/80 backdrop-blur-lg">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <Link href="/" className="text-lg sm:text-xl font-bold text-primary tracking-tight hover:text-primary/80 transition-colors">
+              Vlar
+            </Link>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              onClick={refreshGuildsHandler}
+              variant="ghost"
+              size="icon"
+              className="hover:bg-accent/60 "
+            >
+              <RefreshCw className={`h-5 w-5 ${spinning ? 'animate-spin' : ''}`} />
+            </Button>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm sm:text-base font-semibold hidden sm:block">{user.username}</span>
+              <span className="text-sm font-semibold sm:hidden">{user.username.slice(0, 8)}{user.username.length > 8 ? '...' : ''}</span>
+              <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
+                <AvatarImage
+                  src={
+                    user.avatar
+                  ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                  : 'https://cdn.discordapp.com/embed/avatars/0.png'
+                  }
+                  alt="Avatar"
+                />
+                <AvatarFallback>{user.username[0]}</AvatarFallback>
+              </Avatar>
+            </div>
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+            >
+              <a
+                href="http://localhost:3002/auth/logout"
+                className="flex items-center"
+              >
+                <LogOut className="w-4 h-4 mr-1 sm:mr-2" />              </a>
+            </Button>
+          </div>
         </nav>
 
         {/* Content */}
-        <div className="flex flex-1 flex-col items-center justify-center pt-12 px-4 sm:px-6">
-          <div className="flex flex-col items-center mb-8 w-full">
-            <h2 className="text-2xl font-bold mb-2 text-center">Select a Server</h2>
-            <Button
-              onClick={refreshGuildsHandler}
-              className="flex items-center mb-2"
-              variant="secondary"
-            >
-              <RefreshIcon spinning={spinning} />
-              <span className="text-base font-semibold">Refresh</span>
-            </Button>
-            <p className="text-sm text-muted-foreground text-center">
-              Only servers where you have administrative access are shown.
-            </p>
+        <div className="flex flex-1 flex-col items-center justify-center pt-8 sm:pt-20 px-4 sm:px-6 pb-8 sm:pb-16">
+          <div className="flex flex-col items-center mb-6 sm:mb-10 w-full max-w-5xl">
+        <div className="flex items-center mb-2 sm:mb-3">
+          <Server className="w-6 h-6 text-primary mr-2" />
+          <h2 className="text-xl sm:text-3xl font-bold text-center text-primary">Select a server</h2>
+        </div>
+        <p className="text-xs sm:text-sm text-muted-foreground text-center px-2">
+          Only servers where you have administrative access are shown.
+        </p>
           </div>
 
           <div className="w-full flex justify-center">
-            <Select
-              value={selectedGuildId}
-              onValueChange={handleSelectChange}
-            >
-              <SelectTrigger className="w-full max-w-md">
-                <SelectValue placeholder="-- Select a server --" />
-              </SelectTrigger>
-              <SelectContent>
-                {guilds.map((g) => (
-                  <SelectItem key={g.id} value={g.id}>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage
-                          src={
-                            g.icon
-                              ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`
-                              : 'https://cdn.discordapp.com/embed/avatars/0.png'
-                          }
-                          alt="Server Icon"
-                        />
-                        <AvatarFallback>{g.name?.[0]}</AvatarFallback>
-                      </Avatar>
-                      <span>{g.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {/* Show icons next to names */}
-          <div className="w-full max-w-md mt-2">
-            {selectedGuildId && (
-              <div className="flex items-center gap-3 mt-4">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage
-                    src={
-                      guilds.find(g => g.id === selectedGuildId)?.icon
-                        ? `https://cdn.discordapp.com/icons/${selectedGuildId}/${guilds.find(g => g.id === selectedGuildId)?.icon}.png`
-                        : 'https://cdn.discordapp.com/embed/avatars/0.png'
-                    }
-                    alt="Server Icon"
-                  />
-                  <AvatarFallback>
-                    {guilds.find(g => g.id === selectedGuildId)?.name?.[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-lg font-medium">
-                  {guilds.find(g => g.id === selectedGuildId)?.name}
-                </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 w-full max-w-5xl">
+          {guilds.map((g) => {
+            const iconUrl = g.icon
+          ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`
+          : 'https://cdn.discordapp.com/embed/avatars/0.png';
+            return (
+          <Link href={`/manage/${g.id}`} key={g.id}>
+            <Card className="relative flex flex-col items-center justify-between bg-card border border-border p-4 sm:p-8 hover:shadow-xl hover:border-primary/60 hover:bg-accent/40 transition-all cursor-pointer text-center overflow-hidden group">
+              {/* Blurred background icon */}
+              <div
+            className="absolute inset-0 flex items-center justify-center z-0"
+            aria-hidden="true"
+              >
+            <img
+              src={iconUrl}
+              alt=""
+              className="w-24 h-24 sm:w-32 sm:h-32 object-cover blur-2xl opacity-30 scale-125 group-hover:opacity-50 transition"
+            />
               </div>
-            )}
+              {/* Foreground avatar */}
+              <div className="relative z-10 flex flex-col items-center w-full">
+            <Avatar className="w-16 h-16 sm:w-20 sm:h-20 mb-3 sm:mb-4 border-background shadow-lg group-hover:border-primary transition">
+              <AvatarImage
+                src={iconUrl}
+                alt={`${g.name} icon`}
+              />
+              <AvatarFallback className="text-sm sm:text-base">{g.name[0]}</AvatarFallback>
+            </Avatar>
+            <p className="text-base sm:text-lg font-semibold truncate w-full text-foreground group-hover:text-primary transition">{g.name}</p>
+              </div>
+            </Card>
+          </Link>
+            );
+          })}
+          {guilds.length === 0 && (
+            <Card className="col-span-full flex flex-col items-center justify-center p-6 sm:p-10 bg-muted border border-border">
+          <span className="text-3xl sm:text-4xl mb-2">😕</span>
+          <p className="text-base sm:text-lg text-muted-foreground text-center px-2">No servers found. Try refreshing or check your permissions.</p>
+            </Card>
+          )}
+        </div>
           </div>
         </div>
       </main>
